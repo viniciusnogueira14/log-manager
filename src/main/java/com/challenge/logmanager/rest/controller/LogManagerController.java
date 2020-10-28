@@ -1,7 +1,10 @@
 package com.challenge.logmanager.rest.controller;
 
-import com.challenge.logmanager.dto.LogEntryResource;
+import com.challenge.logmanager.rest.resource.LogEntryResource;
 import com.challenge.logmanager.service.LogEntryService;
+import com.challenge.logmanager.specification.LogEntrySpecification;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,9 +22,14 @@ public class LogManagerController {
         this.logEntryService = logEntryService;
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<Collection<LogEntryResource>> getGetAll() {
         return new ResponseEntity<>(logEntryService.findAll(), HttpStatus.OK);
+    }
+
+    @GetMapping
+    public Slice<LogEntryResource> get(LogEntrySpecification filter, Pageable pageable) {
+        return logEntryService.findByFilter(filter, pageable);
     }
 
     @PostMapping
@@ -30,7 +38,7 @@ public class LogManagerController {
     }
 
     @PostMapping(value = "/batch")
-    public ResponseEntity importFromFile(@RequestBody String path) {
+    public ResponseEntity<String> importFromFile(@RequestBody String path) {
         try {
             int rowsCreated = logEntryService.importFromFile(path);
             return ResponseEntity.created(URI.create("")).body(String.format("%s log rows were imported from the file.", rowsCreated));
@@ -40,13 +48,13 @@ public class LogManagerController {
     }
 
     @DeleteMapping
-    public ResponseEntity deleteAll() {
+    public ResponseEntity<String> deleteAll() {
         logEntryService.deleteAll();
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping(value = "/{code}")
-    public ResponseEntity deleteOne(@PathVariable(value = "code") Long code) {
+    public ResponseEntity<String> deleteOne(@PathVariable(value = "code") Long code) {
         try {
             logEntryService.delete(code);
             return ResponseEntity.noContent().build();

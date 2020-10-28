@@ -1,6 +1,7 @@
 package com.challenge.logmanager.core.entity;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -8,6 +9,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Data
+@Builder
 @Entity
 @Table(name = "LOG_ENTRY")
 @NoArgsConstructor

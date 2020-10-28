@@ -1,20 +1,22 @@
-package com.challenge.logmanager.assembler;
+package com.challenge.logmanager.converter;
 
 import com.challenge.logmanager.core.entity.LogEntry;
-import com.challenge.logmanager.dto.LogEntryResource;
+import com.challenge.logmanager.rest.resource.LogEntryResource;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 @Component
-public class LogEntryAssembler {
+public class LogEntryConverter {
 
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
+    private static final String REMOVE_DOUBLE_QUOTES_REGEX = "^(\"|\")$";
 
     public LogEntry fromResource(LogEntryResource resource) {
         LogEntry entity = new LogEntry();
@@ -54,13 +56,13 @@ public class LogEntryAssembler {
             LogEntry entity = new LogEntry();
 
             DateTimeFormatter formatter = DateTimeFormat.forPattern(DATE_FORMAT);
-            DateTime dateTime = DateTime.parse(splitted[0].replaceAll("^\"|\"$", ""), formatter);
+            DateTime dateTime = DateTime.parse(splitted[0].replaceAll(REMOVE_DOUBLE_QUOTES_REGEX, ""), formatter);
             entity.setDate(dateTime.toDate());
 
-            entity.setIpAddress(splitted[1].replaceAll("^\"|\"$", ""));
-            entity.setRequest(splitted[2].replaceAll("^\"|\"$", ""));
+            entity.setIpAddress(splitted[1].replaceAll(REMOVE_DOUBLE_QUOTES_REGEX, ""));
+            entity.setRequest(splitted[2].replaceAll(REMOVE_DOUBLE_QUOTES_REGEX, ""));
             entity.setRequestStatus(Integer.valueOf(splitted[3]));
-            entity.setUserAgent(splitted[4].replaceAll("^\"|\"$", ""));
+            entity.setUserAgent(splitted[4].replaceAll(REMOVE_DOUBLE_QUOTES_REGEX, ""));
 
             return entity;
         } else {
@@ -68,11 +70,15 @@ public class LogEntryAssembler {
         }
     }
 
-    public Collection<LogEntry> fromLogFile(Collection<String> lines) throws IllegalArgumentException {
+    public Collection<LogEntry> fromLogFile(Collection<String> lines) {
         Collection<LogEntry> entities = new ArrayList<>();
         for (String line : lines) {
             entities.add(this.fromLogFileLine(line));
         }
         return entities;
+    }
+
+    public Slice<LogEntryResource> fromEntity(Slice<LogEntry> entities) {
+        return entities.map(this::fromEntity);
     }
 }
