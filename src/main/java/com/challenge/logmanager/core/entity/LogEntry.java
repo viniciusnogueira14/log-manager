@@ -24,7 +24,7 @@ public class LogEntry {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "DT_LOG_ENTRY")
-    private Date date;
+    private Date logDate;
 
     @Column(name = "NR_IP_LOG", length = 15, nullable = false)
     private String ipAddress;
@@ -33,7 +33,7 @@ public class LogEntry {
     private String request;
 
     @Column(name = "NR_LOG_STATUS", nullable = false, precision = 18)
-    private Integer requestStatus;
+    private Integer logStatus;
 
     @Column(name = "TX_USER_AGENT_LOG", length = 1000, nullable = false)
     private String userAgent;

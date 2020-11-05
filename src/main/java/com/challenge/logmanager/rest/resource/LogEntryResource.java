@@ -20,10 +20,10 @@ public class LogEntryResource {
 
     private Long code;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS", timezone = "America/Sao_Paulo")
-    private Date date;
+    private Date logDate;
     private String ipAddress;
     private String request;
-    private Integer requestStatus;
+    private Integer logStatus;
     private String userAgent;
 
 }

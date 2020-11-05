@@ -13,6 +13,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.convert.QueryByExamplePredicateBuilder;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.Predicate;
@@ -44,9 +45,9 @@ public class LogEntryService {
         return converter.fromEntity(repository.findAll());
     }
 
-    public Integer importFromFile(String path) throws IOException {
-        FileInputStream fileInputStream = new FileInputStream(path);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(fileInputStream));
+    public Integer importFromFile(MultipartFile content) throws IOException {
+        InputStream inputStream = content.getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
         Stream<String> lines = reader.lines();
         Collection<LogEntry> entities = converter.fromLogFile(lines.collect(Collectors.toList()));
@@ -80,7 +81,7 @@ public class LogEntryService {
             LogEntry search = LogEntry.builder()
                     .ipAddress(filter.getIpAddress())
                     .userAgent(filter.getUserAgent())
-                    .date(filter.getLogDate())
+                    .logDate(filter.getLogDate())
                     .build();
 
             ExampleMatcher matcher = ExampleMatcher

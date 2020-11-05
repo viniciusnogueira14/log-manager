@@ -57,11 +57,11 @@ public class LogEntryConverter {
 
             DateTimeFormatter formatter = DateTimeFormat.forPattern(DATE_FORMAT);
             DateTime dateTime = DateTime.parse(splitted[0].replaceAll(REMOVE_DOUBLE_QUOTES_REGEX, ""), formatter);
-            entity.setDate(dateTime.toDate());
+            entity.setLogDate(dateTime.toDate());
 
             entity.setIpAddress(splitted[1].replaceAll(REMOVE_DOUBLE_QUOTES_REGEX, ""));
             entity.setRequest(splitted[2].replaceAll(REMOVE_DOUBLE_QUOTES_REGEX, ""));
-            entity.setRequestStatus(Integer.valueOf(splitted[3]));
+            entity.setLogStatus(Integer.valueOf(splitted[3]));
             entity.setUserAgent(splitted[4].replaceAll(REMOVE_DOUBLE_QUOTES_REGEX, ""));
 
             return entity;

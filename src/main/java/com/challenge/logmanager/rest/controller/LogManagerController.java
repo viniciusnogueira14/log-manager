@@ -8,6 +8,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
 import java.util.Collection;
@@ -38,9 +39,9 @@ public class LogManagerController {
     }
 
     @PostMapping(value = "/batch")
-    public ResponseEntity<String> importFromFile(@RequestBody String path) {
+    public ResponseEntity<String> importFromFile(@RequestParam("content") MultipartFile content) {
         try {
-            int rowsCreated = logEntryService.importFromFile(path);
+            int rowsCreated = logEntryService.importFromFile(content);
             return ResponseEntity.created(URI.create("")).body(String.format("%s log rows were imported from the file.", rowsCreated));
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
