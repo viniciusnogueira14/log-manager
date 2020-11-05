@@ -1,6 +1,7 @@
 package com.challenge.logmanager.rest.controller;
 
 import com.challenge.logmanager.rest.resource.LogEntryResource;
+import com.challenge.logmanager.rest.resource.ResponseString;
 import com.challenge.logmanager.service.LogEntryService;
 import com.challenge.logmanager.specification.LogEntrySpecification;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URI;
+import java.text.ParseException;
 import java.util.Collection;
 
 @RestController
@@ -29,7 +31,7 @@ public class LogManagerController {
     }
 
     @GetMapping
-    public Slice<LogEntryResource> get(LogEntrySpecification filter, Pageable pageable) {
+    public Slice<LogEntryResource> get(LogEntrySpecification filter, Pageable pageable) throws ParseException {
         return logEntryService.findByFilter(filter, pageable);
     }
 
@@ -39,12 +41,12 @@ public class LogManagerController {
     }
 
     @PostMapping(value = "/batch")
-    public ResponseEntity<String> importFromFile(@RequestParam("content") MultipartFile content) {
+    public ResponseEntity<ResponseString> importFromFile(@RequestParam("content") MultipartFile content) {
         try {
             int rowsCreated = logEntryService.importFromFile(content);
-            return ResponseEntity.created(URI.create("")).body(String.format("%s log rows were imported from the file.", rowsCreated));
+            return ResponseEntity.created(URI.create("")).body(new ResponseString(String.format("%s log rows were imported from the file.", rowsCreated)));
         } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ResponseString(ex.getMessage()));
         }
     }
 

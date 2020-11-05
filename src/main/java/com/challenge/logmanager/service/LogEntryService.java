@@ -18,6 +18,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityNotFoundException;
 import javax.persistence.criteria.Predicate;
 import java.io.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -71,17 +74,18 @@ public class LogEntryService {
         }
     }
 
-    public Slice<LogEntryResource> findByFilter(LogEntrySpecification filter, Pageable pageable) {
+    public Slice<LogEntryResource> findByFilter(LogEntrySpecification filter, Pageable pageable) throws ParseException {
         Slice<LogEntry> entities;
         if (Objects.nonNull(filter) &&
                 (Objects.nonNull(filter.getIpAddress())
                         || Objects.nonNull(filter.getLogDate())
                         || Objects.nonNull(filter.getUserAgent()))) {
 
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
             LogEntry search = LogEntry.builder()
                     .ipAddress(filter.getIpAddress())
                     .userAgent(filter.getUserAgent())
-                    .logDate(filter.getLogDate())
                     .build();
 
             ExampleMatcher matcher = ExampleMatcher
@@ -89,11 +93,11 @@ public class LogEntryService {
                     .withMatcher("ipAddress", exact())
                     .withMatcher("userAgent", contains().ignoreCase());
 
-            if (Objects.nonNull(filter.getLogDate()) && Objects.nonNull(filter.getPeriod())) {
+            if (Objects.nonNull(filter.getLogDate()) && Objects.nonNull(filter.getDatePeriod())) {
                 entities = repository.findAll(this.getSpecificationWithDate(Example.of(search, matcher),
-                        filter.getLogDate(), filter.getPeriod()), pageable);
+                        format.parse(filter.getLogDate()), filter.getDatePeriod()), pageable);
             } else {
-                matcher.withMatcher("date", exact());
+                matcher.withMatcher("logDate", exact());
                 entities = repository.findAll(Example.of(search, matcher), pageable);
             }
         } else {
@@ -108,11 +112,11 @@ public class LogEntryService {
 
             if (Objects.nonNull(period)) {
                 if (period.equalsIgnoreCase(PeriodEnum.BEFORE.getArconym())) {
-                    predicates.add(builder.lessThanOrEqualTo(root.get("date"), logDate));
+                    predicates.add(builder.lessThanOrEqualTo(root.get("logDate"), logDate));
                 } else if (period.equalsIgnoreCase(PeriodEnum.AFTER.getArconym())) {
-                    predicates.add(builder.greaterThanOrEqualTo(root.get("date"), logDate));
+                    predicates.add(builder.greaterThanOrEqualTo(root.get("logDate"), logDate));
                 } else if (period.equalsIgnoreCase(PeriodEnum.EQUALS.getArconym())) {
-                    predicates.add(builder.equal(root.get("date"), logDate));
+                    predicates.add(builder.equal(root.get("logDate"), logDate));
                 }
             }
 

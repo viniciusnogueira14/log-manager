@@ -3,9 +3,9 @@ package com.challenge.logmanager.enumeration;
 
 public enum PeriodEnum {
 
-    BEFORE("BF"),
-    AFTER("AF"),
-    EQUALS("EQ");
+    BEFORE("BEFORE"),
+    AFTER("AFTER"),
+    EQUALS("EQUALS");
 
     private final String acronym;
 

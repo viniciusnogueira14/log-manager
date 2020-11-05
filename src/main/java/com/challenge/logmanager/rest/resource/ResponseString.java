@@ -1,4 +1,4 @@
-package com.challenge.logmanager.specification;
+package com.challenge.logmanager.rest.resource;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -11,11 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class LogEntrySpecification {
+public class ResponseString {
 
-    private String ipAddress;
-    private String logDate;
-    private String userAgent;
-    private String datePeriod;
-
+    private String text;
 }
