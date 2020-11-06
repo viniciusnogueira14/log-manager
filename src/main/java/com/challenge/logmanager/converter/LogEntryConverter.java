@@ -16,7 +16,7 @@ import java.util.Collection;
 public class LogEntryConverter {
 
     private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
-    private static final String REMOVE_DOUBLE_QUOTES_REGEX = "^(\"|\")$";
+    private static final String REMOVE_DOUBLE_QUOTES_REGEX = "\"";
 
     public LogEntry fromResource(LogEntryResource resource) {
         LogEntry entity = new LogEntry();
